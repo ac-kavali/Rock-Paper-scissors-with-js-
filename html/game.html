@@ -8,33 +8,43 @@
     <link rel="icon" href="/media/game.png" type="img">
 </head>
 <body>
+    <!--Wrap and center page content in .container-->
     <div class="container">
+        <!--Page Title-->
         <h1 class="title">Rock Paper Scissors</h1>
 
-        <div class="rounds-input">
-            <label for="round-number">Rounds</label>
+        <!--Rounds number controle-->
+        <div class="rounds-container">
+            <span id="roundpholder" class="round-def">Rounds</span>
             <button class="round-btn" id="decrease">−</button>
-            <input id="round-number" type="text" value="3" readonly>
+            <span class="round-number">3</span>
             <button class="round-btn" id="increase">+</button>
+            <button class="start-btn" id="startGameBtn">Start Game</button>
         </div>
 
+        <!--game information-->
+        <div class="round-dashb hidden">
+            <span id="roundText">Round 1 / 3</span>
+        </div>
+
+        <!--Main Game Area-->
         <div class="game-area">
+
             <div class="player-1">
-                <span class="player-name">Andrew</span>
-                <div class="bot-box">
-                    <img id="bot-choice" src="../media/rock.png" alt="Bot choice">
-                </div>
-                <span class="score-value" id="bot-score">0</span>
-            </div>
-
-            <div class="vs">VS</div>
-
-            <div class="player-2">
                 <span class="player-name">You</span>
                 <div class="user-box">
                     <img id="user-choice" src="../media/paper.png" alt="Your choice">
                 </div>
                 <span class="score-value" id="user-score">0</span>
+            </div>
+            <div class="vs">VS</div>
+
+            <div class="player-2">
+                <span class="player-name">andrew</span>
+                <div class="bot-box">
+                    <img id="bot-choice" src="../media/rock.png" alt="Bot choice">
+                </div>
+                <span class="score-value" id="bot-score">0</span>
             </div>
         </div>
 
@@ -50,7 +60,14 @@
             </button>
         </div>
 
-        <p class="result" id="result-text">Choose your move!</p>
+        <p class="hint" id="hint">Choose your move!</p>
+    </div>
+
+    <div id="winner-panel" class="winner-panel hidden">
+        <div class="winner-content">
+            <h2 id="winner-text">Player Wins!</h2>
+            <button id="close-winner">Play Again</button>
+        </div>
     </div>
 
     <script src="../scripts/game.js"></script>

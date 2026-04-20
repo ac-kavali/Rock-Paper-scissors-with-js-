@@ -23,10 +23,67 @@ const closeWinnerBtn = document.getElementById('close-winner');
 const userBox = document.querySelector('.user-box');
 const botBox = document.querySelector('.bot-box');
 
+const clickSound = new Audio("/media/click.mp3");
+const loseSound = new Audio("/media/lost.mp3");
+const winSound = new Audio("/media/win.mp3")
+
 const choices = document.querySelectorAll('.choice-btn');
+
+gameDashboard.style.display = "none";
+
+choices.forEach( btn => {
+    btn.classList.add("disabled");   // Disable choice bottons by default.
+});
+
+
+function reCreateGame(){
+    setTimeout(() => {
+        let finalWinner = getWinner();
+        winnerText.textContent = finalWinner;
+        winnerPanel.style.display = "flex";
+        console.log(finalWinner);
+        if (finalWinner == 'You Win!'){
+            winSound.play();
+        }else{ 
+            loseSound.play();
+        }
+
+        
+        closeWinnerBtn.addEventListener("click", () => {
+            clickSound.play();
+            gameDashboard.style.display = "none";
+            choices.forEach( btn => {
+                btn.classList.add("disabled");   // Disable choices bottons again till game start
+            });
+            botScore = 0;
+            botScoreTxt.textContent = botScore; // Initiate Bot Score
+
+            userScore = 0;
+            userScoreTxt.textContent = userScore; // Initiate User Score
+
+            winnerPanel.style.display = "none"; // Hide Winner Pannel
+            gameDataInput.style.display = "flex"; // Show Game Input Again.
+            
+            totalRounds = 3;
+            roundNumTxt.textContent = totalRounds; // Initiate Total Round Number
+            currentRound  = 1;
+            currentRoundTxt.textContent = `Round ${currentRound}/${totalRounds}` //Initiat Rounds Info Display
+        })
+    }, 400);
+}
+
+let userChoice ;
+var userScore = 0;
+var botScore = 0;
+let currentRound = 1;
+var totalRounds = 3;
+let userMove ;
+let botMove;
+var winner;
 
 // Increase Round Number 
 increaseRoundNumber.addEventListener("click", ()=>{
+    clickSound.play();
     if (totalRounds < 19){
         totalRounds += 2;
     }
@@ -36,6 +93,7 @@ increaseRoundNumber.addEventListener("click", ()=>{
 
 // Decrease Round Number
 decreaseRoundNumber.addEventListener("click", ()=>{
+    clickSound.play();
     if (totalRounds > 3){
         totalRounds -= 2;
     }
@@ -45,25 +103,13 @@ decreaseRoundNumber.addEventListener("click", ()=>{
 
 
 
-// Restart the game and init all the variables : 
-/*function restartGame(){
-    rou
-}*/
 
-let userChoice ;
-var userScore = 0;
-var botScore = 0;
-let currentRound = 1;
-let totalRounds = 3;
-var gameEnded = false;
-let userMove ;
-let botMove;
-var winner;
 
 function randNum(userMove){
-    let randNumber = (Math.random() * (2 - 0) + 0).toFixed(0)
+    let randNumber = Math.floor(Math.random() * 3);
+
     while (randNumber === userMove){
-        randNumber = (Math.random() * (2 - 0) + 0).toFixed(0);
+        randNumber = Math.floor(Math.random() * 3);
     }
     return randNumber;
 }
@@ -95,6 +141,7 @@ function spin(userMove, botMove){
 
     setTimeout(() => {   // All what will happens after the spin finish and someone beat in the round
         clearInterval(intervalID);  // Then stop the spin
+        botDisplay.src = imgs[botMove];   // Display bot choice
 
         if (winner == 'user'){  // Highlight The Winner
             userBox.classList.add("win");
@@ -108,48 +155,22 @@ function spin(userMove, botMove){
             userBox.classList.remove("win");
             botBox.classList.remove("win");
         }, 600);
-
-        botDisplay.src = imgs[botMove];   // Display bot choice
-        choices.forEach(btn => { 
-            btn.classList.remove("disabled"); // Enable choice bottons again
-        });
-
-        if (currentRound <= totalRounds){
-            currentRoundTxt.textContent = `Round ${currentRound}/${totalRounds}`;
-        }
         userScoreTxt.textContent = userScore;
         botScoreTxt.textContent = botScore; 
-        startHint.style.display = "block";  
-    
         
-
-        // Show Winner and Restart the game; 
-        if (gameEnded){
-            setTimeout(() => {
-                winnerText.textContent = getWinner();
-                winnerPanel.style.display = "flex";
-
-                
-                closeWinnerBtn.addEventListener("click", () => {
-                    botScore = 0;
-                    botScoreTxt.textContent = botScore; // Initiate Bot Score
-
-                    userScore = 0;
-                    userScoreTxt.textContent = userScore; // Initiate User Score
-
-                    winnerPanel.style.display = "none"; // Hide Winner Pannel
-                    gameDataInput.style.display = "flex"; // Show Game Input Again.
-                    
-                    totalRounds = 3;        
-                    roundNumTxt.textContent = totalRounds; // Initiate Total Round Number
-                    currentRound  = 1;
-                    currentRoundTxt.textContent = `Round ${currentRound}/${totalRounds}` //Initiat Rounds Info Display
-                })
-            }, 1000);
-        }
-        // if the last round show the game winner with removing the full element in the page and show the option of restart game
     }, 2000);
-
+    setTimeout(() =>{// 1 seconde then update current round
+        currentRound++;
+        if (currentRound <= totalRounds){
+            currentRoundTxt.textContent = `Round ${currentRound}/${totalRounds}`;
+            choices.forEach(btn => { 
+                btn.classList.remove("disabled"); // Enable choice bottons again
+            });
+            startHint.style.display = "block";
+        }else {
+            reCreateGame();
+        }
+    }, 3000) 
 }
 
 // Get Result Of A Single Battle
@@ -180,42 +201,46 @@ function updateScore(){
 
 let isRuning = false;
 
-function gameEngine(totalRounds){
+function gameEngine(){
     const pointes = ["paper", "rock", "scissors"];
         startHint.style.display = "block";
 
     choices.forEach(choice => {
         choice.addEventListener("click", ()=>{
+            clickSound.play();
             if(!isRuning){
                 isRuning = true;
                 startHint.style.display = "none";
                 userChoice = choice.dataset.choice;
-                currentRound++;                         //increment current round number
-                gameEnded = currentRound > totalRounds;
                 choices.forEach( btn => {
-                    btn.classList.add("disabled");
+                    btn.classList.add("disabled");   // Disable 
                 })
                 userMove = pointes.indexOf(userChoice); // Get User Data-Choice As Number 
+                console.log(`usr move :${userMove}`);
                 botMove = pointes.indexOf(pointes[randNum(userMove)]); // Get Bot Data-Choice as Number
+                console.log(`bot move :${botMove}`);
                 updateScore(pointes,userChoice);
                 spin(userMove, botMove);
-                
             }
             setTimeout(() => {
                 isRuning = false;
             }, 2000);
         });
     });
-    
-
 }
 
 // Start Game
 startGame.addEventListener("click", () => {
+    gameDashboard.style.display = "block";
+    currentRoundTxt.textContent = `Round ${currentRound}/${totalRounds}`; //upload round data 
+    clickSound.play();
     gameDataInput.style.display = "none";
     tit.style.marginButtom = "200px";
     gameDashboard.classList.remove('hidden');
-    gameEngine(totalRounds);
+    choices.forEach( btn => {
+        btn.classList.remove("disabled");   // Enable choice buttons when start the game
+    });
+    gameEngine();
 
 });
 

@@ -205,16 +205,20 @@ body {
     overflow: hidden;
 }
 
+
+/*Highlight The winner*/
 .user-box.win {
-    transform: scale(1.2);
+    transform: scale(1.1);
     border: 3px solid gold;
 }
 
 
 .bot-box.win {
-    transform: scale(1.2);
+    transform: scale(1.1);
     border: 3px solid gold;
 }
+
+
 .user-box img {
     width: 120px;
     height: 120px;
